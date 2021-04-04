@@ -13,7 +13,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Set up database
-engine = create_engine('postgresql://postgres:qwerty@localhost:5432/postgres')
+engine = create_engine(Aqui tienes que escribir tu URL de tu base de datos ya sea en tu localhost(tu propia computadora) o ya sea en heroku como en mi caso tu URI )
 db = scoped_session(sessionmaker(bind=engine))
 
 
