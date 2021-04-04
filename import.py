@@ -1,3 +1,4 @@
+#Creacion de tablas e insertar datos de books.csv a las tablas
 import os, csv
 
 from sqlalchemy import create_engine
