@@ -7,12 +7,12 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 
 app = Flask(__name__)
 
-# Configure session to use filesystem
+# Configurar la sesión para usar el sistema de archivos
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Set up database
+# Configurar base de datos
 engine = create_engine(Aqui tienes que escribir tu URL de tu base de datos ya sea en tu localhost(tu propia computadora) o ya sea en heroku como en mi caso tu URI )
 db = scoped_session(sessionmaker(bind=engine))
 
@@ -32,20 +32,22 @@ def login():
 
 	session.clear()
 
-	#if the method is post (by submitting the form)
+	#si el método es post (enviando el formulario)
 	if request.method =="POST":
 		lu = request.form.get("login-username")
 		lp = request.form.get("login-password")
 
-		#if username field is empty
+		#si el campo de nombre de usuario está vacío
 		if not lu:
 			return render_template("error.html", message="¡Ingrese su usuario!")
 
-		#if password field is empty
+		#si el campo de contraseña está vacío
 		if not lp:
 			return render_template("error.html", message="¡Ingrese su contraseña!")
 
-		#Query db for username
+		
+
+		#Consulta db para nombre de usuario
 		rows = db.execute("SELECT * FROM users WHERE username = :a", {"a": lu})
 		result = rows.fetchone()
 
@@ -74,54 +76,57 @@ def registration():
 
 	session.clear()
 
-	#if the user submits the form(via POST)
+	#si el usuario envía el formulario (a través de POST)
 	if request.method == "POST":
 		u = request.form.get("username")
 		p = request.form.get("password")
 
-		#Ensure username was submitted
+		#Asegúrese de que se envió el nombre de usuario
 
 		if not u:
 			return render_template("error.html", message="Por favor ingrese un nombre de usuario válido")
 
-		#Query databse for username
+		
+                #Consulta databse para nombre de usuario
 		userCheck = db.execute("SELECT username from users").fetchall()
 
-		#check if username already exists
+		#Comprobar si el nombre de usuario ya existe
 		for i in range(len(userCheck)):
 			if userCheck[i]["username"] == u:
 				return render_template("error.html", message="Usuario ya existente!")
 
-		#check if password is provided
+		#Comprobar si se proporciona la contraseña
 		if not p:
 			return render_template("error.html", message="¡DEBE proporcionar contraseña!")
 
-		#ensure password is six characters long
+		
+                #asegúrese de que la contraseña tenga seis caracteres
 		if len(p) < 6:
 			return render_template("error.html", message="Las contraseñas DEBEN tener seis caracteres")
 
-		#ensure confirmation was submitted
+		
+                #asegúrese de que se envió la confirmación
 		if not request.form.get("confirmation"):
 			return render_template("error.html", message="¡DEBE confirmar la contraseña!")
 
-		#ensure the provided passwords are same
+		#asegúrese de que las contraseñas proporcionadas sean las mismas
 		if not request.form.get("password") == request.form.get("confirmation"):
 			return render_template("error.html", message="¡La contraseña no es la misma!")
 
-		#insert user into DB
+		#insertar usuario en la base de datos
 		db.execute("INSERT into users (username, password) values (:username, :password)",
 			{"username":request.form.get("username"), "password":request.form.get("password")})
 
 		session["username"] = u
-		#commit changes to databse
+		#cambios a la base de datos
 		db.commit()
 
 
 
-		#redirect to the login page
+		#redirigir a la página de inicio de sesión
 		return render_template("login.html")
 
-	#if the user reached the route via GET
+	#si el usuario alcanzó la ruta a través de GET
 	else:
 		return render_template("registration.html")
 
@@ -137,16 +142,17 @@ def search():
 		if not sb:
 			return render_template("error.html", message="Proporcione el nombre del libro.")
 
-		#to use 'LIKE' keyword
+		#para usar la palabra clave 'LIKE'
 		query = ("%" + sb + "%").title()
 
-		#select all the books that has similar name as the inputted one
+		#selecciona todos los libros que tengan un nombre similar al ingresado
 		rows = db.execute("SELECT isbn, title, author, year FROM books WHERE isbn LIKE :query OR title LIKE :query OR author LIKE :query LIMIT 15",{"query": query})
-		#check if the book exist
+		
+                #comprobar si el libro existe
 		if rows.rowcount==0:
 			return render_template("error.html", message="¡No existe ningún libro!")
 
-		#fetch all the results
+		#buscar todos los resultados
 		books = rows.fetchall()
 		return render_template("results.html", books=books,sb=sb)
 
