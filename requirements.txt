@@ -1,0 +1,16 @@
+Flask
+Flask-Session
+psycopg2-binary
+SQLAlchemy
+certifi
+chardet
+Click
+idna
+itsdangerous
+Jinja2
+Markupsafe
+requests
+urllib3
+Werkzeug
+psycopg2
+gunicorn
