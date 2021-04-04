@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<nav class="navbar navbar-light bg-light justify-content-between">
+  <a class="navbar-brand">Busque su libro favorito aquí!</a>
+  <small id="bookHelp" class="form-text text-muted">Ejemplo: 1451648537, Steve Jobs o Walter Isaacson</small>
+
+  <form class="form-inline" action= "{{url_for('search')}}" method="get">
+    <input class="form-control mr-sm-2" name="text" type="search" placeholder="Search" aria-label="Search" autofocus autocomplete="off">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+  </form>
+</nav>
+
+    <div class="dropdown-divider"></div>
+    {% if books %}
+
+        <div class="alert alert-primary" role="alert">
+            Usted busco "{{sb}}"
+        </div>
+    {% endif %}
+
+    <div class="container results-container">
+
+        {% for book in books %}
+            <div class="card border-primary mb-3" style="width: 12rem">
+                <div class="card-body">
+                    <h4 class="card-title">{{book['title']}}</h4>
+                    <h6> by </h6>
+                    <h6 class="card-text">{{book['author']}}</h6>
+                </div>
+                <div class="card-footer">
+                    <a href="/book/{{book['isbn']}}" class="card-link">Ir ala pagina del libro</a>
+                </div>
+           </div>
+        {% endfor %}
+
+{% endblock %}
